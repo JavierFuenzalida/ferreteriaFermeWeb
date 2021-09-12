@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load static %}
+
+
+  {% block titulo %}
+
+  {% endblock%}
+  <link rel="shortcut icon" type="image/png" href="{% static 'core/img/favicon.png' %}"/>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'core/css/Base.css' %}">
+  {% block link %}
+
+  {% endblock%}
+
+  <style>
+    .customMergin {
+      margin-left: -23px;
+      margin-top: 15px;
+    }
+
+    @media screen and (max-width: 900px) {
+      .customMergin {
+        margin-left: -13px;
+        margin-top: 15px;
+
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!--INICIO BARRA DE NAVEGACION-->
+  <!--INICIO BARRA DE NAVEGACION-->
+  <!--INICIO BARRA DE NAVEGACION-->
+    <div id="fondoNegro" style="min-width: 100%; min-height: 100%; left: 0; position: fixed; z-index: 1; display: none;"></div>
+    <div style="position: relative; z-index: 2;">
+        <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03"
+                aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'core/img/logo-blanco.png' %}" width="100px" alt="FERME"></a>
+
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+
+                <div class="navbar-nav text-lg-center ml-auto">
+                            <a class="nav-item nav-link text-white" href="{% url 'listado-producto' %}">Productos</a>
+					{% if request.user.is_authenticated %}
+					{% ifequal user.groups.all.0.name "ClienteGrupo" %}
+					<a class="nav-item nav-link text-white" href="{% url 'micuenta' %}">Mi Cuenta</a>
+					{% endifequal %}
+					{% ifequal user.groups.all.0.name "SuperUsuarioGrupo" %}
+					<a class="nav-item nav-link text-white" href="{% url 'nuevo-usuario' %}">Gestion Administrador</a>
+					{% endifequal %}
+					{% ifequal user.groups.all.0.name "EmpleadoGrupo" %}
+					<a class="nav-item nav-link text-white" href="{% url 'nuevo-producto' %}">Gestion Empleado</a>
+					{% endifequal %}
+					{% ifequal user.groups.all.0.name "ProveedorGrupo" %}
+					<a class="nav-item nav-link text-white" href="{% url 'listado-pedidos' %}">Gestion Proveedor</a>
+					{% endifequal %}
+					<a class="nav-item nav-link text-white" href="{% url 'logout' %}">Cerrar Sesion</a>
+					{% else %}
+					<a class="nav-item nav-link text-white" href="{% url 'login' %}">Iniciar Sesión</a>
+					{% endif %}
+          <a class="nav-item nav-link text-white" type="button" id="btnBuscar" href="#"><i
+            class="fas fa-2x fa-search"></i></a>
+					{% if request.user.is_authenticated %}
+					{% ifequal user.groups.all.0.name "ClienteGrupo" %}
+					<div class="d-flex">
+					  <a class="nav-item nav-link text-white" href="{% url 'carrito' %}"><i class="fas fa-2x fa-shopping-cart"></i></a>
+					  <div class="customMergin" hidden id="contadiv">
+						
+					  </div>
+					</div>
+					{% endifequal %}
+					{% else %}
+
+					{% endif %}
+                </div>
+            </div>
+        </nav>
+		
+        {% if request.user.is_authenticated %}
+        <div class="p-0 d-flex flex-row-reverse" style="background-color: #121314;">
+        <small class="nav-item nav-link text-white pt-0 pb-0">Bienvenido: {{user.username}}</small>
+        </div>
+        {% endif %}
+    </div>
+  <!--FIN BARRA DE NAVEGACION-->
+  <!--FIN BARRA DE NAVEGACION-->
+  <!--FIN BARRA DE NAVEGACION-->
+  <div id="contenidoCuerpo">
+
+    <div id="divBuscar" class="divBuscar p-4 bg-white">
+      <div class="container">
+        <input class="form-control" type="search" id="inputBuscar" autocomplete="off" placeholder="Ingresa el Nombre del Producto">
+      </div>
+      <div class="container" id="resultadoBusqueda" style="display: none;">
+      </div>
+    </div>
+
+
+    <div class="P-0" style="min-height: 100vh; z-index: 0;">
+      {% block Contenido %}
+
+
+
+
+      {% endblock %}
+    </div>
+  </div>  
+  <!--FOOTER-->
+  <!--FOOTER-->
+  <!--FOOTER-->
+  <footer class="bg-dark text-white text-center text-lg-start ">
+    <!-- Grid container -->
+    <div class="container p-4">
+      <!--Grid row-->
+      <div class="row">
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+          <h5 class="text-uppercase">INFORMACIÓN</h5>
+
+          <ul class="list-unstyled mb-0">
+            <li>
+              <a href="{% url 'contacto' %}" class="text-white">Contacto</a>
+            </li>
+            <li>
+              <a href="{% url 'como-llegar' %}" class="text-white">¿Como llegar?</a>
+            </li>
+          </ul>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
+          <h5 class="text-uppercase">SOBRE FERME</h5>
+
+          <ul class="list-unstyled mb-0">
+            <li>
+              <a href="#!" class="text-white"><strong>Dirección Casa Matriz:</strong></a>
+              <P>Calle Nueva 1660, Huechuraba, Región Metropolitana.</P>
+            </li>
+            <li>
+              <a href="#!" class="text-white"><strong>Horarios de atención en tienda:</strong></a>
+              <p>09:00 - 13:30 y 14:30 - 18:30 hrs de Lunes a Viernes.</p>
+            </li>
+          </ul>
+        </div>
+        <!--Grid column-->
+        <div class="col-lg-4 col-md-12 mb-4 mb-md-0">
+          <h5 class="text-uppercase">REDES SOCIALES</h5>
+
+          <a href=""><i class="fab fa-3x fa-facebook text-light"></i></a>
+          <br>
+          <a class="text-light" href="#">Ferreteria Ferme</a>
+        </div>
+      </div>
+      <!--Grid row-->
+    </div>
+    <!-- Grid container -->
+
+    <!-- Copyright -->
+    <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+      Todos los derechos reservados:
+      <a class="text-white" href="#">FERME S.A. 2021</a>
+    </div>
+    <!-- Copyright -->
+  </footer>
+  <!--FIN FOOTER-->
+  <!--FIN FOOTER-->
+  <!--FIN FOOTER-->
+
+  <!--  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script> -->
+
+  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+  <script src="{% static 'core/js/Base.js' %}"></script>
+
+
+  {% if messages %}
+  {% for m in messages %}
+  <script>
+    Swal.fire({
+      "title": "AVISO",
+      "text": "{{m}}",
+      "icon": "{{m.tags}}"
+    })
+  </script>
+  {% endfor %}
+  {% endif %}
+</body>
+
+</html>
+
+
+{% block javascript %}
+
+{% endblock %}

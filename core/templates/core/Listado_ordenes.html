@@ -1,0 +1,83 @@
+{% extends 'core/Base_cuenta.html' %}
+
+{% load static %}
+
+{% block link_cuenta %}
+{% endblock%}
+
+{% block javascript_cuenta %}
+    <script>
+    function preguntar(idOrden) {
+        Swal.fire({
+        title: '¿Deseas Cancelar este Pedido?',
+        text: "Esta Accion no se puede Deshacer",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: 'Si, Cancelar Pedido',
+        cancelButtonText: 'No'
+        }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/cambiar-estado-orden-compra/'+idOrden+'/4/'
+        }
+        })
+    }
+    </script>
+{% endblock %}
+
+{% block Contenido_cuenta %}
+<div class="container">
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Ordenes de Compra:</h4>
+        </div>
+    </div>
+
+    <div class="pt-4 table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nº Orden</th>
+                    <th scope="col">Fecha de Ingreso</th>
+                    <th scope="col">Nombre Empledo</th>
+                    <th scope="col">Proveedor</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Ver Más</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in ordenes %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{o.0}}</td>
+                    <td>{{o.1}}</td>
+                    <td>{{o.2}}</td>
+                    <td>{{o.4}}</td>
+                    {% if o.3 == 1 %}
+                        <td><strong class="text-info">Finalizada</strong></td>
+                    {% elif o.3 == 2 %}
+                        <td><strong class="text-info">Enviada</strong></td>
+                    {% elif o.3 == 3 %}
+                        <td><strong class="text-success">Tomada</strong></td>
+                    {% elif o.3 == 4 %}
+                        <td><strong class="text-danger">Cancelada</strong></td>
+                    {% elif o.3 == 5 %}
+                        <td><strong class="text-danger">Rechazada</strong></td>
+                    {% endif %}
+                    <td><a target="_blank" href="{% url 'orden-compra' o.0 %}">Detalles</a></td>
+                    {% if o.3 == 2 %}
+                        <td><a type="button" href="#" onclick="preguntar({{o.0}})">¿Cancelar Pedido?</a></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,55 @@
+{% load static %}
+
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Actualizar mis Datos</h2>
+            <button class="close" type="button" data-dismiss = "modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button> 
+        </div>
+        <div class="modal-body">
+
+            <form action="{% url 'actualizar-datos' %}" method="POST" id="formulario_cliente">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Rut:</label>
+                    <input type="text" name="id_usu" id="id_usu" value="{{ cliente.id_usuario.id_usuario }}" hidden>
+                    <input type="text" name="rut_cli" id="rut_cli" class="form-control"
+                            value="{{ cliente.rut_cli }}" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label>Nombres:</label>
+                    <input type="text" name="nombre_cli" id="nombre_cli" class="form-control"
+                            value="{{ cliente.nombres }}" autocomplete="off" required>
+                </div>
+                <div class="form-group" id="">
+                    <label>Apellidos:</label>
+                    <input type="text" name="apellido_cli" id="apellido_cli" class="form-control"
+                            value="{{ cliente.apellidos }}" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Nacimiento:</label>
+                    <input type="date" name="naci_cli" id="naci_cli" class="form-control"
+                            value="{{cliente.nacimiento|date:'Y-m-d'}}" required>
+                </div>
+                <div class="form-group">
+                    <label>Celular:</label>
+                    <input type="number" name="fono_cli" id="fono_cli" class="form-control"
+                            value="{{ cliente.fono }}" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electronico:</label>
+                    <input type="email" name="mail_cli" id="mail_cli" class="form-control"
+                            value="{{ cliente.email }}" autocomplete="off" required>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-dark" type="button" id="btnActualizar">Actualizar</button>
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'core/js/actualizar_cliente.js' %}"></script>

@@ -1,0 +1,359 @@
+{% extends 'core/Base_cuenta.html' %}
+
+{% load static %}
+
+{% block link_cuenta %}
+
+{% endblock%}
+
+{% block javascript_cuenta %}
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+<script src="{% static 'core/js/traducciones.js' %}"></script>
+<!-- <script src="{% static 'core/js/Agregar_orden.js' %}"></script> -->
+<script>
+function listarCarro(){
+        $.ajax({
+            url: "/listado-carrito/",
+            type: "get",
+            dataType: "json",
+            success: function(response){
+
+                if (response.length <= 0){
+                    $('#listado-carrito tbody').html("");
+                    $('#msj-carrito').html("<strong>Agrege Productos a la Orden</strong>");
+                    $('#msj-carrito').removeAttr('hidden')
+                    $('#formulario-orden-compra').attr('hidden', true);
+                }
+                else{
+                    $('#listado-carrito tbody').html("");
+                    $('#msj-carrito').attr('hidden', true);
+                    $('#formulario-orden-compra').removeAttr('hidden');
+                    for (let i = 0; i < response.length; i++) {
+                        
+                        let fila = '<tr>';
+                        fila += '<th scope="row">'+(i+1)+'</th>';
+                        fila += '<td>'+response[i].descripcion + '</td>';
+                        fila += '<td><div class="d-flex">';
+
+                        fila += '<form method="POST" id="furmulario'+response[i].id_carrito+'">{% csrf_token %}';
+                        fila += '<div class="d-flex justify-content-center p-0">';
+                        fila += '<a href="#" onclick="menosCantidad('+response[i].id_carrito+','+i+')"><i class="fas fa-2x fa-minus-circle text-success"></i></a>';
+                        fila += '<input type="number" hidden name="id-carrito" value="' + response[i].id_carrito + '">';
+                        fila += '<input value="'+response[i].cantidad+'" type="text" readonly id="cantidad'+i+'" name="cantidad" style="width: 40px;" class="p-0 text-center form-control form-control-sm">';
+                        fila += '<a href="#"onclick="masCantidad('+response[i].id_carrito+','+i+')"><i class="fas fa-2x fa-plus-circle text-danger"></i></a>';
+                        fila += '</div></form></div></td>';
+                        
+                        fila += '<td><form method="POST" id="furmularioEliminar'+response[i].id_carrito+'">{% csrf_token %}';
+                        fila += '<input type="number" hidden name="idcarro" value="' + response[i].id_carrito + '">';
+                        fila += '<a href="#" onclick="eliminarRegistro('+response[i].id_carrito+')" type="button"><i class="fas fa-2x fa-times text-danger"></i></a></form></td>';
+                        $('#listado-carrito tbody').append(fila);
+                        
+                    }
+            }
+            },
+            error: function(error){
+                console.log(error);
+            }
+        })
+    }
+
+    /*---------------------*/
+
+    function listarProductos(id_usu){
+        $.ajax({
+            url: "/productos_por_proveedor/"+id_usu+"/",
+            type: "get",
+            dataType: "json",
+            success: function(response){
+                
+                if (response.length <= 0) {
+                    $('#msj-tabla-vacia').html("");
+                    $('#tabla-productos').attr('hidden', true);
+                    let mensaje = '<div class="text-center">';
+                    mensaje += '<div class="d-flex justify-content-center">';
+                    mensaje += '<i class="fas fa-arrow-up text-danger pr-1"></i>';
+                    mensaje += '<strong>No se contraron productos pertenecientes a este proveedor.</strong>';
+                    mensaje += '</div>';
+                    mensaje += '</div>';
+                    $('#msj-tabla-vacia').append(mensaje);
+                    $('#msj-tabla-vacia').removeAttr('hidden');
+                }
+
+
+
+                $('#listado-productos tbody').html("");
+
+                for (let i = 0; i < response.length; i++) {
+                    
+                    let fila = '<tr>';
+                    fila += '<th scope="row">'+(i+1)+'</th>';
+                    fila += '<td>'+response[i].descripcion + '</td>';
+                    fila += '<td>'+response[i].stock + '</td>';
+                    fila += '<td>'+response[i].stock_critico + '</td>';
+                    fila += '<td><form method="POST" id="formulario'+i+'">';
+                    fila += '{% csrf_token %}<input hidden Name="id-producto" value ="'+response[i].id+'"/>';
+                    fila += '<a href="#" type="button" onclick="addCarrito_emp('+i+')" class="btn btn-sm btn-warning">Agregar</a></form></td>';
+                    $('#listado-productos tbody').append(fila);
+                    $('#tabla-productos').removeAttr('hidden');
+                    $('#msj-tabla-vacia').attr('hidden', true);
+                }
+            },
+            error: function(error){
+                console.log(error);
+            }
+        })
+    }
+
+    /*---------------------*/
+
+    $('#proveedores').change(function(){
+        let id_pro = $('#proveedores').val()
+        if (id_pro == 0){
+            $('#nameProveedor').html("");
+            listarProductos(id_pro);
+            limpiarCarrito();
+            listarCarro();
+        }
+        else{
+            let nombre_Pro = $('#proveedores option:selected').text();
+            $('#nameProveedor').html("");
+            $('#nameProveedor').append("Nombre de Proveedor: "+nombre_Pro);
+            listarProductos(id_pro);
+            limpiarCarrito();
+            listarCarro();
+        }
+
+
+
+
+
+    })
+
+    /*---------------------*/
+
+    function addCarrito_emp(nro) {
+        var form = 'formulario' + nro;
+        $.ajax({
+            data: $('#'+form).serialize(),
+            url: '/agregar_a_carrito/',
+            type: $('#'+form).attr('method'),
+            success: function (response) {
+                console.log(response)
+                listarCarro();
+                $('#detalle-orden').removeAttr('hidden')
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+
+        }
+
+    /*---------------------*/
+
+    function menosCantidad(id_, id_input) {
+        var valor = $('#cantidad' + id_input).val();
+        valor = parseFloat(valor) - parseFloat(1);
+        $('#cantidad' + id_input).val(valor);
+
+
+        var id_formu = 'furmulario' + id_;
+        $.ajax({
+            data: $('#' + id_formu).serialize(),
+            url: '/actualizar-cantidad/',
+            type: $('#' + id_formu).attr('method'),
+            success: function (response) {
+                console.log(response)
+                listarCarro();
+
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+
+    }
+
+    /*---------------------*/
+
+    function masCantidad(id_, id_input) {
+        var valor = $('#cantidad' + id_input).val();
+        valor = parseFloat(valor) + parseFloat(1);
+        $('#cantidad' + id_input).val(valor);
+
+        var id_formu = 'furmulario' + id_;
+        $.ajax({
+            data: $('#' + id_formu).serialize(),
+            url: '/actualizar-cantidad/',
+            type: $('#' + id_formu).attr('method'),
+            success: function (response) {
+                console.log(response)
+                listarCarro();
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+
+    }
+
+    /*---------------------*/
+
+    function eliminarRegistro(id){
+        var id_formu = 'furmularioEliminar' + id;
+        $.ajax({
+            data: $('#' + id_formu).serialize(),
+            url: '/eliminar-registro-carrito/',
+            type: $('#' + id_formu).attr('method'),
+            success: function (response) {
+                console.log(response)
+                listarCarro();
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+
+    }
+
+    /*---------------------*/
+
+    function limpiarCarrito(){
+        $.ajax({
+            url: '/limpiar-Carrito/',
+            type: 'GET',
+            success: function (response) {
+                console.log(response)
+                listarCarro();
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+
+    }
+
+    /*---------------------*/
+
+    function generarOrden(){
+        $('#id-proveedor').val($('#proveedores').val());
+        $('#formulario-orden-compra').submit();
+    }
+
+    /*---------------------*/
+
+    function preguntar() {
+        Swal.fire({
+        title: '¿Estas Seguro?',
+        text: "Registrar Orden de Compra",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#dc3545',
+        confirmButtonText: 'Enviar Pedido',
+        cancelButtonText: 'No'
+        }).then((result) => {
+        if (result.isConfirmed) {
+            generarOrden();
+        }
+        })
+    }
+
+</script>
+{% endblock %}
+
+{% block Contenido_cuenta %}
+
+<div class="container mt-4 pb-4">
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Nueva Orden:</h4>
+        </div>
+    </div>
+
+    <div class="pt-4 row">
+        <div class="col-sm-12 col-md-12 col-lg-6">
+            <div class="form-group">
+                <label for="proveedores">Seleccione el Proveedor</label>
+                <select class="form-control form-control-sm" name="" id="proveedores">
+                    <option value="0" selected disabled>.-Seleccione-.</option>
+                    {% for p in proveedores %}
+                    <option value="{{p.id_usuario.id_usuario}}">{{p.nombre}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <hr>
+            <br>
+            <br>
+            <div id="msj-tabla-vacia">
+                <div class="text-center">
+                    <div class="d-flex justify-content-center">
+                        <i class="fas fa-arrow-up text-danger pr-3"></i>
+                        <strong>Por Favor Seleccione un proveedor.</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive" id="tabla-productos" style="max-height: 300px;" hidden>
+                <table class="table" id="listado-productos" >
+                    <thead class="thead-dark" >
+                        <tr style="font-size: 10px; ">
+                            <th scope="col">#</th>
+                            <th scope="col">PRODUCTO</th>
+                            <th scope="col">STOCK</th>
+                            <th scope="col">STOCK CRITICO</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-light" >
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="col-sm-12 col-md-12 col-lg-6" style="background-color: #EAECEE;" id="detalle-orden">
+            <div class="form-group">
+                <label style="font-size: 21px;">Detalle de Orden</label>
+                <div id="nameProveedor">
+                    
+                </div>
+            </div>  
+            <hr>
+            <br>
+            <br>
+            <div class="table-responsive" style="max-height: 170px;">
+                <table class="table" id="listado-carrito">
+                    <thead class="thead-dark">
+                        <tr style="font-size: 10px;">
+                            <th scope="col">#</th>
+                            <th scope="col">PRODUCTO</th>
+                            <th scope="col">CANTIDAD A PEDIR</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-light" class="bg-light" style="font-size: 13px;">
+                        
+                    </tbody>
+                </table>
+                <div class="text-danger text-center" id="msj-carrito"><strong>Agrege Productos a la Orden</strong></div>
+            </div>
+            <br>
+            <br>
+            <hr>
+            <div class="row">
+                <div class="col-sm-12 d-flex flex-row-reverse">
+                    <form action="{% url 'regitrar-orden-compra' %}" method="POST" id="formulario-orden-compra" hidden>
+                        {% csrf_token %}
+                        <input type="text" name="id-proveedor" id="id-proveedor" hidden>
+                        <button onclick="preguntar()" type="button" class="btn btn-warning">Generar Orden de Compra</button>
+                    </form>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+
+
+
+{{ block.super }}
+{% endblock %}

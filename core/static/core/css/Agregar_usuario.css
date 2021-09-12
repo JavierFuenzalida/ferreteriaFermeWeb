@@ -1,0 +1,7 @@
+label.error {
+    color: darkred;
+}
+
+input.error, select {
+    border: 1px solid darkred;
+}

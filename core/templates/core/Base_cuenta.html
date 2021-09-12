@@ -1,0 +1,151 @@
+{% extends 'core/Base.html' %}
+
+{% load static %}
+
+
+{% block titulo %}
+<title>Mi Cuenta</title>
+
+
+{% endblock %}
+
+{% block link %}
+<link rel="stylesheet" href="{% static 'core\css\SideBar.css' %}">
+{% block link_cuenta %}
+{% endblock %}
+{% endblock %}
+
+{% block javascript %}
+<script>
+  document.getElementById('toggle').onclick = function () {
+    document.getElementById('sidebar').classList.toggle('hidden')
+  }
+</script>
+{% block javascript_cuenta %}
+{% endblock %}
+{% endblock %}
+
+
+{% block Contenido %}
+<div class="wrapper">
+  <div id="sidebar" class="sidebar hidden">
+    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      {% if request.user.is_authenticated %}
+
+      {% ifequal user.groups.all.0.name "ClienteGrupo" %}
+      <div class="text-center text-white p-2">
+        <i class="fas fa-3x fa-user-circle"></i>
+        <h4>Mi Cuenta</h4>
+        <br>
+        <br>
+      </div>
+      {% endifequal %}
+      {% ifequal user.groups.all.0.name "EmpleadoGrupo" %}
+      <div class="text-center text-white p-2">
+        <i class="fas fa-3x fa-cogs"></i>
+        <h4>Gestion</h4>
+        <br>
+        <br>
+      </div>
+      {% endifequal %}
+      {% ifequal user.groups.all.0.name "SuperUsuarioGrupo" %}
+      <div class="text-center text-white p-2">
+        <i class="fas fa-3x fa-cogs"></i>
+        <h4>Gestion</h4>
+        <br>
+        <br>
+      </div>
+      {% endifequal %}
+      {% ifequal user.groups.all.0.name "ProveedorGrupo" %}
+      <div class="text-center text-white p-2">
+        <i class="fas fa-3x fa-cogs"></i>
+        <h4>Gestion</h4>
+        <br>
+        <br>
+      </div>
+      {% endifequal %}
+
+      {% endif %}
+
+      {% if request.user.is_authenticated %}
+
+        {% ifequal user.groups.all.0.name "ClienteGrupo" %}
+        <a href="{% url 'micuenta' %}" class="nav-link">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-pen-square pr-3" style="font-size: 20px;"></i>
+            Datos Personales
+          </div>
+        </a>
+        <!---->
+        <a href="{% url 'mis-compras' %}" class="nav-link">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-shopping-bag pr-3" style="font-size: 20px;"></i>
+            Mis Compras
+          </div>
+        </a>
+        <!---->
+        {% endifequal %}
+
+        {% ifequal user.groups.all.0.name "EmpleadoGrupo" %}
+        <a href="{% url 'nuevo-producto' %}" class="nav-link">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-plus-circle pr-3" style="font-size: 20px;"></i>
+            Registrar Productos
+          </div>
+        </a>
+        <!---->
+        <a href="{% url 'nueva-orden-compra' %}" class="nav-link">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-file-medical pr-3" style="font-size: 20px;"></i>
+            Registrar Orden de Compra
+          </div>
+        </a>
+        <!---->
+        <a href="{% url 'ordenes-compra' %}" class="nav-link">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-boxes pr-3" style="font-size: 20px;"></i>
+            Ordenes de Compra
+          </div>
+        </a>
+        <!---->
+        {% endifequal %}
+
+        {% ifequal user.groups.all.0.name "SuperUsuarioGrupo" %}
+        <a href="{% url 'nuevo-usuario' %}" class="nav-link">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-user-plus pr-3" style="font-size: 20px;"></i>
+            Registrar Usuarios
+          </div>
+        </a>
+        <!---->
+        <a href="{% url 'graficos' %}" class="nav-link">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-chart-pie pr-3" style="font-size: 20px;"></i>
+            Graficos y Estadisticas
+          </div>
+        </a>
+        {% endifequal %}
+
+        {% ifequal user.groups.all.0.name "ProveedorGrupo" %}
+        <a href="{% url 'listado-pedidos' %}" class="nav-link">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-boxes pr-3" style="font-size: 20px;"></i>
+            Mis Pedidos
+          </div>
+        </a>
+        {% endifequal %}
+
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="content pl-1 pt-1">
+    <button id="toggle" class="btn btn-dark btn-sm"><i class="fas fa-ellipsis-h"></i></button>
+    <div class="container-fluid">
+      {% block Contenido_cuenta %}
+
+      {% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% load static %}
+
+<div class="container pt-4">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Actualizar producto: {{producto.id_producto}}</h2>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form action="{% url 'editar-producto' %}" method="POST" enctype="multipart/form-data" id="formulario_actualizar_producto">
+                    {% csrf_token %}
+                    <div class="row align-items-center">
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+
+                            <div class="card text-center mx-auto" style="max-width:500px">
+                                <div id="preview">
+                                    {% if foto.foto %}
+                                    <img id="fotoPrevia" src="https://res.cloudinary.com/djxgsv3yo/image/upload/{{foto.foto}}"
+                                        class="card-img-top img-fluid" style="width: 100%;" alt="">
+                                    {% else %}
+                                    <div class="text-center pt-4">
+                                        <i class="fas fa-3x fa-upload"></i>
+                                        <p>Seleccione una imagen</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="card-body" id="body">
+                                    <div class="btn btn-dark">
+                                        <label>
+                                            <input type="file" id="file" name="foto" accept="image/*"
+                                                style="display: none;" />
+                                            Buscar
+                                        </label>
+                                    </div>
+                                    <div id="dvQuitar" class="pt-2">
+                                        <a type="button" class="text-danger" onclick="quitarFoto()"><i class="fas fa-trash-alt"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-12 col-md-12 col-lg-6">
+
+                            <div>
+                                <div class="form-group">
+                                    <label>Titulo:</label>
+                                    <input type="text" name="id_produc" value="{{producto.id_producto}}" id="id_produc" hidden>
+                                    <input type="text" name="descripcion" value="{{producto.descripcion}}" id="descripcion"
+                                        class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Precio:</label>
+                                    <input type="text" name="precio" id="precio" value="{{producto.precio}}"
+                                        class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Stock:</label>
+                                    <input type="text" name="stock" id="stock" value="{{producto.stock}}"
+                                        class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Stock Critico:</label>
+                                    <input type="number" name="critico" id="critico" value="{{producto.stock_critico}}"
+                                        class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Disponibilidad:</label>
+                                    <select name="Disponibilidad" id="Disponibilidad" class="form-control">
+                                        <option value="1">ACTIVO</option>
+                                        <option value="2">INACTIVO</option>
+                                    </select>
+                                </div>
+                                {% if foto.foto %}
+                                <div class="form-check" id="ch">
+                                    <input type="checkbox" class="form-check-input" id="eliminarFoto">
+                                    <label class="form-check-label" for="validar" id="eliminarFoto">¿Desea Conservar la Foto Actual?</label>
+                                </div>
+                                {% endif %}
+                                <input type="text" id="respuestaCheck" name="respuestaCheck" hidden>
+                                <button class="btn btn-lg btn-dark btn-block mt-2" type="button" id="btn-guardar">Actualizar
+                                    Producto</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="{% static 'core/js/actualizar_producto.js' %}"></script>
+

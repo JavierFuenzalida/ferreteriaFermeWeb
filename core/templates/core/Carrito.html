@@ -1,0 +1,246 @@
+{% extends 'core/Base.html' %}
+
+{% load static %}
+
+{% block javascript %}
+
+<script>
+    function listarCarrito() {
+        $.ajax({
+            url: "/listado-carrito/",
+            type: "get",
+            dataType: "json",
+            success: function (response) {
+                console.log(response);
+
+                if (response.length <= 0) {
+                    console.log('vacio')
+                    $('#carrito-body').html("");
+                    let mensaje = '<div class="text-center">';
+                    mensaje += '<div class="d-flex justify-content-center">';
+                    mensaje += '<i class="fas fa-shopping-cart text-danger pr-3"></i>';
+                    mensaje += '<strong>Tu carro de compra está vacío.</strong>';
+                    mensaje += '</div>';
+                    mensaje += '</br>';
+                    mensaje += '<div class="text-white"><a href="{% url 'listado-producto' %}" type="button" class="btn btn-dark">Seguir comprando</a></div>';
+                    mensaje += '</div>';
+                    $('#carrito-body').append(mensaje);
+                }
+
+
+                $('#listado-carrito tbody').html("");
+                for (let i = 0; i < response.length; i++) {
+                    let fila = '<tr>';
+                    fila += '<td><img style="width: 100px;" class="img-fluid img-thumbnail" src="https://res.cloudinary.com/djxgsv3yo/image/upload/' + response[i].foto + '"</td>';
+                    fila += '<td>' + response[i].descripcion + '</td>';
+
+                    fila += '<td><form action="{% url 'actualizar-cantidad' %}" method="POST" id="furmulario' + response[i].id_carrito + '">{% csrf_token %}';
+                    fila += '<div class="d-flex justify-content-center p-0">';
+                    fila += '<a href="#" onclick="menosCantidad(' + response[i].id_carrito + ',' + i + ')" type="button" class="text-danger pr-1"><i class="fas fa-2x fa-minus-square"></i></a>';
+                    fila += '<input type="number" hidden name="id-carrito" value="' + response[i].id_carrito + '">';
+                    fila += '<input type="text" readonly id="cantidad' + i + '" name="cantidad" class="p-0 text-center form-control form-control-sm" style="width: 60px;"value="' + response[i].cantidad + '">';
+                    fila += '<a href="#" onclick="masCantidad(' + response[i].id_carrito + ',' + i + ')" type="button" class="text-success pl-1"><i class="fas fa-2x fa-plus-square"></i></a>'
+                    fila += '</div></form></td>';
+
+                    fila += '<td><strong>$' + response[i].total + '</strong></td>';
+                    fila += '<td><form action="{% url 'eliminar-registro-carrito' %}" method="POST" id="furmularioEliminar' + response[i].id_carrito + '">{% csrf_token %}';
+                    fila += '<input type="number" hidden name="idcarro" value="' + response[i].id_carrito + '">';    
+                    fila += '<a type="button" href="#" onclick="eliminarRegistro('+response[i].id_carrito+')" class="text-danger"><i class="fas fa-times-circle"></i></a></form></td>';
+                    fila += '</tr>';
+                    $('#listado-carrito tbody').append(fila);
+                }
+                $('#valoresTotales').html("");
+                var Subtotal = response.reduce((sum, value) => (typeof value.total == "number" ? sum + value.total : sum), 0);
+                var TotalFinal = parseInt(Subtotal + Subtotal * 0.19);
+
+                let contenidoSub = '<div class="col-sm-6 col-md-6 col-lg-6">';
+                contenidoSub += '<strong>Sub Total: $' + Subtotal + '<strong>';
+                contenidoSub += '</div>';
+                $('#valoresTotales').append(contenidoSub);
+
+                let contenidoTot = '<div class="col-sm-6 col-md-6 col-lg-6">';
+                contenidoTot += '<strong>Total a pagar: $' + TotalFinal + ' (IVA INCLUIDO)<strong>';
+                contenidoTot += '</div>';
+                $('#valoresTotales').append(contenidoTot);
+
+
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        listarCarrito();
+    })
+
+
+
+    function masCantidad(id_, id_input) {
+        var valor = $('#cantidad' + id_input).val();
+        valor = parseFloat(valor) + parseFloat(1);
+        $('#cantidad' + id_input).val(valor);
+
+        var id_formu = 'furmulario' + id_;
+        $.ajax({
+            data: $('#' + id_formu).serialize(),
+            url: $('#' + id_formu).attr('action'),
+            type: $('#' + id_formu).attr('method'),
+            success: function (response) {
+                console.log(response)
+                listarCarrito();
+                contarCarrito();
+
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+
+    }
+
+    function menosCantidad(id_, id_input) {
+        var valor = $('#cantidad' + id_input).val();
+        valor = parseFloat(valor) - parseFloat(1);
+        $('#cantidad' + id_input).val(valor);
+
+
+        var id_formu = 'furmulario' + id_;
+        $.ajax({
+            data: $('#' + id_formu).serialize(),
+            url: $('#' + id_formu).attr('action'),
+            type: $('#' + id_formu).attr('method'),
+            success: function (response) {
+                console.log(response)
+                listarCarrito();
+                contarCarrito();
+
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+
+    }
+
+    function eliminarRegistro(id){
+        var id_formu = 'furmularioEliminar' + id;
+        $.ajax({
+            data: $('#' + id_formu).serialize(),
+            url: $('#' + id_formu).attr('action'),
+            type: $('#' + id_formu).attr('method'),
+            success: function (response) {
+                console.log(response)
+                listarCarrito();
+                contarCarrito();
+                
+
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+
+    }
+
+    /* var $ = jQuery.noConflict(); */
+    function abrirModalFinalizar(url) {
+        $('#finalizarCompra').load(url, function () {
+            $(this).modal('show');
+        });
+    }
+
+    function MetodoPago() {
+            if ($('#SelectPago').val() == 1) {
+                $('#ContenidoTarjeta').html("");
+                let formularioPago = '<div class="form-group p-1 border">';
+                formularioPago += '<label>DATOS DE LA TARJETA</label>';
+                formularioPago += '<input type="text" class="form-control mb-2" id="nroTarjeta" placeholder="*Número de Tarjeta" required>';
+                formularioPago += '<div class="d-flex">';
+                formularioPago += '<input type="text" class="form-control mr-2" id="" placeholder="*Mes" required>';
+                formularioPago += '<input type="text" class="form-control mr-2" id="" placeholder="*Año" required>';
+                formularioPago += '<input type="text" class="form-control" id="" placeholder="*CVV" required>';
+                formularioPago += '</div>';
+                formularioPago += '</div>';
+                $('#ContenidoTarjeta').append(formularioPago);
+            }
+            if ($('#SelectPago').val() == 2) {
+                $('#ContenidoTarjeta').html("");
+            }
+        }    
+</script>
+
+{% if messages %}
+{% for c in messages %}
+<script>
+Swal.fire({
+  imageUrl:'https://res.cloudinary.com/djxgsv3yo/image/upload/v1621189169/FerreteriaFerme/Mensajes/gracias2_lezlpj.png',
+  html: '<h1 style="color: #F93DA6;">{{c}}</h1> <p>¿algún problema? Envianos un email a contacto@ferme.cl</p>',
+  width: '672px',
+  padding: '0em',
+  confirmButtonText: 'Ir a mis Compras',
+  confirmButtonColor: '#343a40',
+  showCloseButton: true
+  }).then((result) => {
+    if (result.isConfirmed) {
+        window.location.href= '/mis-compras/'
+    }
+})
+</script>
+{% endfor %}
+{% endif %}
+
+{% endblock %}
+
+{% block Contenido %}
+
+<div class="container p-4" id="carrito-body">
+
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Carrito de Compras:</h4>
+        </div>
+    </div>
+
+    <div class="container pt-4">
+        <div class="row">
+            <div class="col-12 table-responsive">
+                <table class="table table-image text-center" id="listado-carrito">
+                    <thead>
+                        <tr>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Quitar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="valoresTotales" class="container d-flex justify-content-center bg-dark text-white text-center">
+
+    </div>
+
+    <div class="container pt-4 d-flex justify-content-around">
+        <div>
+            <a href="#" type="button" class="btn btn-warning">Seguir Comprando</a>
+        </div>
+        <div>
+            <a href="#" onclick="abrirModalFinalizar('{% url 'mostrar-proceso-compra' %}')" type="button" class="btn btn-dark">Finalizar Compra</a>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="finalizarCompra" role="dialog">
+
+</div>
+
+{% endblock %}

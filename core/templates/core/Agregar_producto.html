@@ -1,0 +1,103 @@
+{% extends 'core/Base_cuenta.html' %}
+
+{% load static %}
+
+{% block link_cuenta %}
+<link rel="stylesheet" href="{% static 'core/css/Agregar_usuario.css' %}">
+{% endblock%}
+
+{% block javascript_cuenta %}
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+<script src="{% static 'core/js/traducciones.js' %}"></script>
+<script src="{% static 'core/js/Agregar_producto.js' %}"></script>
+{% endblock %}
+
+{% block Contenido_cuenta %}
+
+<div class="container mt-4 pb-4">
+
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Nuevo Producto:</h4>
+        </div>
+    </div>
+
+    <form class="pt-4" action="{% url 'agregar-producto' %}" method="POST" enctype="multipart/form-data" id="formulario_producto">
+        {% csrf_token %}
+        <div class="row align-items-center">
+            <div class="col-sm-12 col-md-12 col-lg-6">
+
+                <div class="card text-center mx-auto" style="max-width:500px">
+                    <div id="preview">
+                        <div class="text-center pt-4">
+                            <i class="fas fa-3x fa-upload"></i>
+                            <p>Seleccione una imagen</p>
+                        </div>
+                    </div>
+                    <div class="card-body" id="body">
+                        <div class="btn btn-dark">
+                            <label>
+                                <input type="file" id="file" name="foto" accept="image/*" style="display: none;" />
+                                Buscar
+                            </label>
+                        </div>
+                        <div id="dvQuitar" class="pt-2">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-sm-12 col-md-12 col-lg-6">
+
+                <div>
+                    <div class="form-group">
+                        <label>Titulo:</label>
+                        <input type="text" name="descripcion" id="descripcion" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Precio:</label>
+                        <input type="text" name="precio" id="precio" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock:</label>
+                        <input type="text" name="stock" id="stock" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Stock Critico:</label>
+                        <input type="number" name="critico" id="critico" class="form-control" required>
+                    </div>
+                    <div class="form-group mb-0">
+                        <label>Fecha de vencimiento:</label>
+                        <input type="date" name="vencimiento" id="vencimiento" class="form-control">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="validar">
+                        <label class="form-check-label" for="validar" id="">Producto Sin Caducidad</label>
+                    </div>
+                    <div class="form-group">
+                        <label>Proveedor:</label>
+                        <select name="proveedor" id="proveedor" class="form-control">
+                            {% for p in proveedor %}
+                            <option value="{{p.id_usuario.id_usuario}}">{{p.nombre}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoria producto:</label>
+                        <select name="Familia" id="Familia" class="form-control">
+                            {% for f in familia %}
+                            <option value="{{f.id_familia}}">{{f.descripcion}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-lg btn-dark btn-block" type="button" id="btnguardar">Registrar Producto</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,62 @@
+{% load static %}
+
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Registro Persona Natural</h2>
+            <button class="close" type="button" data-dismiss = "modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button> 
+        </div>
+        <div class="modal-body">
+            
+            <form action="{% url 'registro_cliente' %}" method="POST" id="formulario_cliente">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Rut:</label>
+                    <input type="text" name="rut_cli" id="rut_cli" class="form-control" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Nombres:</label>
+                    <input type="text" name="nombre_cli" id="nombre_cli" class="form-control" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Apellidos:</label>
+                    <input type="text" name="apellido_cli" id="apellido_cli" class="form-control" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Nacimiento:</label>
+                    <input type="date" name="naci_cli" id="naci_cli" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Celular:</label>
+                    <input type="number" name="fono_cli" id="fono_cli" class="form-control" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electronico:</label>
+                    <input type="email" name="mail_cli" id="mail_cli" class="form-control" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Nombre de Usuario:</label>
+                    <input type="text" name="username_cli" id="username_cli" class="form-control" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" name="password1_cli" id="password1_cli" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Repita la Contraseña:</label>
+                    <input type="password" name="password2_cli" id="password2_cli" class="form-control">
+                </div>
+                <button class="btn btn-lg btn-dark btn-block" id="btncrear" type="button">Registrarme</button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+
+<script src="{% static 'core/js/nuevo_cliente.js' %}"></script>
+
+

@@ -1,0 +1,109 @@
+{% extends 'core/Base_cuenta.html' %}
+
+{% load static %}
+
+
+{% block link_cuenta %}
+<link rel="stylesheet" href="{% static 'core/css/Agregar_usuario.css' %}">
+{% endblock%}
+
+
+{% block javascript_cuenta %}
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+<script src="{% static 'core/js/traducciones.js' %}"></script>
+<script src="{% static 'core/js/Agregar_usuario.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+{% block Contenido_cuenta %}
+
+<div class="container p-4">
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Gestion de Usuarios:</h4>
+        </div>
+    </div>
+
+    <!---->
+
+<div class="text-center pt-4">
+    <button onclick="abrirModalCreacion('{% url 'mostrar-nuevo-empleado' %}')" class="btn btn-dark">Nuevo Empleado</button>
+    <button onclick="abrirModalCreacion('{% url 'mostrar-nuevo-proveedor' %}')" class="btn btn-dark">Nuevo Proveedor</button>
+</div>
+
+<div class="container pt-4">
+    <h2 class="pb-3">Listado de Empleados</h2>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">ID</th>
+                <th scope="col">RUT</th>
+                <th scope="col">NOMBRES</th>
+                <th scope="col">APELLIDOS</th>
+                <th scope="col">CARGO</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody class="bg-light">
+            {% for e in empleados %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ e.id_empleado }}</td>
+                <td>{{ e.rut_emp }}</td>
+                <td>{{ e.nombres }}</td>
+                <td>{{ e.apellidos }}</td>
+                <td>{{ e.id_cargo.descripcion }}</td>
+                <td><button onclick="abrirModalEdicion('{% url 'actualizar-empleado' e.id_usuario.id_usuario %}')" class="btn btn-dark">Actualizar</button></td>
+                <td><a href="#" onclick="eliminarEmpleado({{ e.id_usuario.id_usuario }})" class="btn btn-danger">Borrar</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="container pt-4">
+    <h2 class="pb-3">Listado de proveedores</h2>
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">ID</th>
+                <th scope="col">RUT</th>
+                <th scope="col">NOMBRE ENTIDAD</th>
+                <th scope="col">CELULAR</th>
+                <th scope="col">RUBRO</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody class="bg-light">
+            {% for p in proveedores %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ p.id_proveedor }}</td>
+                <td>{{ p.rut_provee }}</td>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.celular }}</td>
+                <td>{{ p.id_rubro.descripcion }}</td>
+                <td><button onclick="abrirModalEdicion('{% url 'actualizar-proveedor' p.id_usuario.id_usuario %}')" class="btn btn-dark">Actualizar</button></td>
+                <td><a href="#" onclick="eliminarProveedor({{ p.id_usuario.id_usuario }})" class="btn btn-danger">Borrar</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+
+
+<div class="modal fade" id="edicion" role="dialog">
+
+</div>
+
+{{ block.super }}
+{% endblock %}

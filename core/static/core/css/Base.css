@@ -1,0 +1,33 @@
+.fondoTitulo {
+  background: linear-gradient(to right, rgba(255,255,255,0),
+            rgba(255,255,255,1)), 
+              url(https://res.cloudinary.com/djxgsv3yo/image/upload/v1624406388/FerreteriaFerme/Mensajes/tituloFerme_lniz1m.jpg);
+}
+
+.pagination > .active > a
+{
+    color: white !Important;
+    background-color: #343a40 !Important;
+    border: solid 2px #ffc107 !Important;
+}
+
+
+.divBuscar {
+    position: absolute;
+    width: 800px;
+    left: 50%;
+    margin-left: -400px;
+    z-index: 2;
+    display: none;
+  }
+
+@media screen and (max-width: 900px) {
+    .divBuscar {
+      position: absolute;
+      width: 100%;
+      left: 0%;
+      margin-left: 0px;
+      z-index: 2;
+
+    }
+  }

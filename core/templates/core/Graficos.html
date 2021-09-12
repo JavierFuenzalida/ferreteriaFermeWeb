@@ -1,0 +1,102 @@
+{% extends 'core/Base_cuenta.html' %}
+
+{% load static %}
+
+
+{% block link_cuenta %}
+
+{% endblock%}
+
+
+{% block javascript_cuenta %}
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="{% static 'core/js/Graficos.js' %}"></script>
+{% endblock %}
+
+
+
+
+
+
+{% block Contenido_cuenta %}
+<div class="container p-4">
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Graficos y Estadisticas:</h4>
+        </div>
+    </div>
+
+
+    <div class="p-4" style="min-height: 180px;">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="m-1 text-center rounded" style="min-height: 100%;">
+                    <div class="bg-info rounded-top text-white">
+                        <strong>Producto Más Vendido Hoy</strong>
+                    </div>
+                    {% if producto %}
+                        {% for p in producto|slice:":1" %}
+                        <div>
+                            <a href="{% url 'detalles-producto' p.0 %}" class="text-dark">
+                                <div class="border border-info rounded-bottom p-2">
+                                    <img style="max-height: 70px;" src="https://res.cloudinary.com/djxgsv3yo/image/upload/{{p.3}}" alt="">
+                                    <p>{{p.1}}</p>
+                                    <p class="text-success">Unidades Vendidas: {{p.2}}</p>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div>
+                             <div class="border border-info rounded-bottom p-2">
+                                <i class="fas fa-exclamation-circle text-info" style="font-size: 70px;"></i>
+                                <p class="text-danger" >No se ha</p>
+                                <p class="text-danger">Realizado Ninguna Venta Hoy</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12">
+                <div class="m-1 text-center rounded" style="min-height: 100%;">
+                    <div class="bg-info rounded-top text-white">
+                        <strong>Ganancias Totales del Dia</strong>
+                    </div>
+                    <div class="">
+                        <div class="border border-info rounded-bottom p-2">
+                            <i class="fas fa-dollar-sign text-info" style="font-size: 70px;"></i>
+                            <p>Suma Total</p>
+                            {% if monto %}
+                            <p class="text-success">Ingresos ${{ monto }}</p>
+                            {% else %}
+                            <p class="text-danger">Ingresos $0</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="graficopie"></div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="graficoColumnas"></div>
+        </div>
+    </div>
+    <div class="container">
+        {%for v in vendidos%}
+            {{v.descripcion}} {{v.cantidad}}
+        {%endfor%}
+    </div>
+</div>
+{{ block.super }}
+{% endblock %}

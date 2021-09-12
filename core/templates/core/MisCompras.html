@@ -1,0 +1,73 @@
+{% extends 'core/Base_cuenta.html' %}
+
+{% load static %}
+
+{% block javascript_cuenta %}
+
+
+{% endblock %}
+
+
+{% block Contenido_cuenta %}
+
+
+<div class="container">
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Mis Compras:</h4>
+        </div>
+    </div>
+    
+    <div class="pt-4 table-responsive">
+        <table class="table">
+            {% if boletas %}
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nº Boleta</th>
+                    <th scope="col">Fecha de Compra</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Boleta DPF</th>
+                </tr>
+            </thead>
+            {% else %}
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nº Factura</th>
+                    <th scope="col">Fecha de Compra</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Factura DPF</th>
+                </tr>
+            </thead>
+            {% endif %}
+            <tbody>
+                {% if boletas %}
+                {% for b in boletas %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{b.id_boleta}}</td>
+                    <td>{{b.fecha_ingreso}}</td>
+                    <td>{{b.id_estado.descripcion}}</td>
+                    <td><a target="_blank" href="{% url 'boleta-pdf' b.id_boleta %}">Detalles</a></td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                {% for f in facturas %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{f.id_factura}}</td>
+                    <td>{{f.fecha_ingreso}}</td>
+                    <td>{{f.id_estado.descripcion}}</td>
+                    <td><a target="_blank" href="{% url 'factura-pdf' f.id_factura %}">Detalles</a></td>
+                </tr>
+                {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{{ block.super }}
+{% endblock %}

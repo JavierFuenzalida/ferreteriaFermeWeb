@@ -1,0 +1,100 @@
+{% extends 'core/Base_cuenta.html' %}
+
+{% load static %}
+
+
+{% block link_cuenta %}
+
+{% endblock%}
+
+
+{% block javascript_cuenta %}
+<script>
+    function preguntar(idOrden){
+        Swal.fire({
+        title: '¿Que Deseas Hacer con Este Pedido?',
+        text: "Esta Accion no se puede Deshacer",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: `Tomar Pedido`,
+        denyButtonText: `Rechazar Pedido`,
+        confirmButtonColor: '#28a745',
+        denyButtonColor: '#dc3545',
+        cancelButtonColor: '#343a40',
+        }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            window.location.href = '/cambiar-estado-orden-compra/'+idOrden+'/3/'
+        } else if (result.isDenied) {
+            window.location.href = '/cambiar-estado-orden-compra/'+idOrden+'/5/'
+        }
+        })
+    }
+</script>
+{% endblock %}
+
+
+{% block Contenido_cuenta %}
+
+<div class="container p-4">
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Mis Pedidos:</h4>
+        </div>
+    </div>
+
+    {% if ordenes %}
+    <!---->
+    <div class="pt-4 table-responsive">
+        <table class="table">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nº Orden</th>
+                    <th scope="col">Fecha de Ingreso</th>
+                    <th scope="col">Nombre Empledo</th>
+                    <th scope="col">Proveedor</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Ver Más</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for o in ordenes %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{o.0}}</td>
+                    <td>{{o.1}}</td>
+                    <td>{{o.2}}</td>
+                    <td>{{o.4}}</td>
+                    {% if o.3 == 1 %}
+                        <td><strong class="text-info">Finalizada</strong></td>
+                    {% elif o.3 == 2 %}
+                        <td><strong class="text-info">Enviada</strong></td>
+                    {% elif o.3 == 3 %}
+                        <td><strong class="text-success">Tomada</strong></td>
+                    {% elif o.3 == 4 %}
+                        <td><strong class="text-danger">Cancelada</strong></td>
+                    {% elif o.3 == 5 %}
+                        <td><strong class="text-danger">Rechazada</strong></td>
+                    {% endif %}
+                    <td><a target="_blank" href="{% url 'orden-compra' o.0 %}">Detalles</a></td>
+                    <td><a type="button" onclick="preguntar({{o.0}})" href="#">Gestionar Pedido</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="row justify-content-center text-center align-items-center pt-2">
+        <strong><i class="far fa-times-circle text-danger"></i> Actualmente No Tienes Solicitudes de pedidos.</strong>
+    </div>
+    {% endif %}
+    
+
+</div>
+
+
+
+{{ block.super }}
+{% endblock %}

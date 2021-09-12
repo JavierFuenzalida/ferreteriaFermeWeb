@@ -1,0 +1,220 @@
+{% extends 'core/Base.html' %}
+
+{% load static %}
+
+{% block titulo %}
+<title>{{producto.descripcion}}</title>
+{% endblock%}
+
+{% block link %}
+
+{% endblock%}
+
+
+{% block javascript %}
+<script src="{% static 'core/js/Detalle_producto.js' %}"></script>
+{% endblock %}
+
+{% block Contenido %}
+<!--Main layout-->
+<main class="pt-4">
+    <div class="container dark-grey-text mt-5">
+
+        <!--Grid row-->
+        <div class="row wow fadeIn">
+
+            <!--Grid column-->
+            <div class="col-md-6 mb-4">
+
+                <img src="https://res.cloudinary.com/djxgsv3yo/image/upload/{{foto.foto}}" class="img-fluid"
+                    alt="">
+
+            </div>
+            <!--Grid column-->
+
+            <!--Grid column-->
+            <div class="col-md-6 mb-4">
+
+                <!--Content-->
+                <div class="p-4 text-center">
+
+                    <p class="lead">
+                        <span>Valor:</span>
+                        <span>$ {{producto.precio}}</span>
+                    </p>
+
+                    <p class="lead font-weight-bold">Descripción</p>
+
+                    <p>{{producto.descripcion}}</p>
+                    <p>Stock: {{producto.stock}}</p>
+                    <p>Distribuido por: {{proveedor.nombre}}</p>
+
+                    <div class="d-flex justify-content-center">
+                        <!-- Default input -->
+                        {% if request.user.is_authenticated %}
+					    {% ifequal user.groups.all.0.name "ClienteGrupo" %}
+                        {% if producto.activo == 1 %}
+                        <form action="{% url 'agregar_a_carrito' %}" method="POST" id="formulario-agregar-carrito">
+                            {% csrf_token %}
+                            <input type="text" name="id-producto" value="{{producto.id_producto}}" hidden>
+                            <button onclick="agregarCarrito()" class="btn btn-dark btn-md my-0 p" type="button">Agregar al Carrito
+                                <i class="fas fa-shopping-cart ml-1"></i>
+                            </button>
+                        </form>
+                        {% else %}
+                        <button href="#" class="btn btn-sm btn-danger float-right" disabled type="button">Producto no disponible</button>
+                        {% endif %}
+                        {% endifequal %}
+                        
+					    {% ifequal user.groups.all.0.name "EmpleadoGrupo" %}
+                        <button onclick="abrirModalDetalle('{% url 'actualizar-producto' producto.id_producto %}')" class="btn btn-dark btn-md my-0 p" type="button">Actualizar Producto
+                            <i class="fas fa-pencil-alt ml-1"></i>
+                        </button>
+                        {% endifequal %}
+
+                        {% else %}
+                        <div class="mt-4">
+                            <strong>Para poder agregar Productos al carrito es necesario</strong>
+                            <a href="{% url 'login' %}"> Iniciar sesion</a>
+                        </div>
+                        {% endif %}
+
+                    </div>
+                    <div class="text-center" id="msj-agregado">
+                    </div>
+                </div>
+                <!--Content-->
+
+            </div>
+            <!--Grid column-->
+
+        </div>
+        <!--Grid row-->
+
+        <hr>
+
+        <!--Grid row-->
+        <div class="row d-flex justify-content-center wow fadeIn">
+
+            <!--Grid column-->
+            <div class="col-md-6 text-center">
+
+                <h4 class="my-4 h4">Otros Productos</h4>
+
+                <p>Échale un Vistazo a estos
+                     Productos que quizá sean de tu interés</p>
+
+            </div>
+            <!--Grid column-->
+
+        </div>
+        <!--Grid row-->
+
+        <!--Carousel Wrapper-->
+        <div id="multi-item-example" class="carousel slide carousel-multi-item" data-ride="carousel">
+
+            <!--Controls-->
+            <div class="controls-top text-center m-3">
+                <a class="btn-floating text-dark" href="#multi-item-example" data-slide="prev"><i class="fas fa-2x fa-chevron-circle-left"></i></a>
+                <a class="btn-floating text-dark" href="#multi-item-example" data-slide="next"><i class="fas fa-2x fa-chevron-circle-right"></i></a>
+            </div>
+            <!--/.Controls-->
+
+            <!--Indicators-->
+            <ol class="carousel-indicators">
+                <li data-target="#multi-item-example" data-slide-to="0" class="active"></li>
+                <li data-target="#multi-item-example" data-slide-to="1"></li>
+                <li data-target="#multi-item-example" data-slide-to="2"></li>
+            </ol>
+            <!--/.Indicators-->
+
+            <!--Slides-->
+            <div class="carousel-inner" role="listbox">
+
+                <!--First slide-->
+                <div class="carousel-item active">
+                    
+                    <div class="row">
+                        {% for herramienta in productosHerramientas|slice:":3" %}
+                        <div class="col-md-4">
+                            <div class="card mb-2">
+                                <img class="img-fluid" style="max-height: 232px;"
+                                    src="https://res.cloudinary.com/djxgsv3yo/image/upload/{{herramienta.12}}"
+                                    alt="Card image cap">
+                                <div class="card-body">
+                                    <h4 class="card-title">$ {{herramienta.3}}</h4>
+                                    <p class="card-text">{{herramienta.1}}</p>
+                                    <a href="{% url 'detalles-producto' herramienta.0 %}" type="button" class="btn btn-dark text-white">Ver Detalles</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!--/.First slide-->
+
+                <!--Second slide-->
+                <div class="carousel-item">
+
+                    <div class="row">
+                        {% for pintura in productospinturas|slice:":3" %}
+                        <div class="col-md-4">
+                            <div class="card mb-2">
+                                <img class="img-fluid" style="max-height: 232px;"
+                                    src="https://res.cloudinary.com/djxgsv3yo/image/upload/{{pintura.12}}"
+                                    alt="Card image cap">
+                                <div class="card-body">
+                                    <h4 class="card-title">$ {{pintura.3}}</h4>
+                                    <p class="card-text">{{pintura.1}}</p>
+                                    <a href="{% url 'detalles-producto' pintura.0 %}" class="btn btn-dark text-white" type="button">Ver Detalles</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+                <!--/.Second slide-->
+
+                <!--Third slide-->
+                <div class="carousel-item">
+
+                    <div class="row">
+                        {% for baldoza in productosbaldozas|slice:":3" %}
+                        <div class="col-md-4">
+                            <div class="card mb-2">
+                                <img class="img-fluid" style="max-height: 232px;"
+                                    src="https://res.cloudinary.com/djxgsv3yo/image/upload/{{baldoza.12}}"
+                                    alt="Card image cap">
+                                <div class="card-body">
+                                    <h4 class="card-title">$ {{baldoza.3}}</h4>
+                                    <p class="card-text">{{baldoza.1}}</p>
+                                    <a href="{% url 'detalles-producto' baldoza.0 %}" type="button" class="btn btn-dark text-white">Ver Detalles</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+                <!--/.Third slide-->
+
+            </div>
+            <!--/.Slides-->
+
+        </div>
+        <!--/.Carousel Wrapper-->
+
+    </div>
+    
+</main>
+<!--Main layout-->
+
+
+<div class="modal fade" id="detalle" role="dialog">
+
+</div>
+
+{% endblock %}

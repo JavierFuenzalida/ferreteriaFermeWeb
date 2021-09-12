@@ -1,0 +1,143 @@
+{% extends 'core/Base.html' %}
+
+{% load static %}
+
+{% block link %}
+<link rel="stylesheet" href="{% static 'core/css/Agregar_usuario.css' %}">
+{% endblock%}
+
+{% block javascript %}
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+<script src="{% static 'core/js/traducciones.js' %}"></script>
+<script src="{% static 'core/js/Productos.js' %}"></script>
+{% endblock %}
+
+{% block Contenido %}
+
+<div class="container pt-4">
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Productos:</h4>
+        </div>
+    </div>
+
+    {% if request.user.is_authenticated %}
+    {% else %}
+    <div class="text-center m-4">
+        <strong>Para poder agregar Productos al carrito es necesario</strong>
+        <a href="{% url 'login' %}"> Iniciar sesion</a>
+    </div>
+    {% endif %}
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark rounded sticky-top mt-3" style="z-index: 1;">
+        <p class="d-block d-sm-block d-md-block d-lg-none text-white m-1" href="#">CATEGORIAS</p>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav w-100 d-flex justify-content-center">
+                <li class="nav-item m-1">
+                    <a href="{% url 'listado-producto' %}" class="btn btn-outline-warning d-none d-inline-block ">TODOS</a>
+                </li>
+                <li class="nav-item m-1">
+                    <a href="{% url 'listado-producto-herramientas' %}" class="btn btn-outline-warning d-none d-inline-block ">HERRAMIENTAS</a>
+                </li>
+                <li class="nav-item m-1">
+                    <a href="{% url 'listado-producto-fijaciones' %}" class="btn btn-outline-warning d-none d-inline-block ">FIJACIONES Y ADHESIVOS</a>
+                </li>
+                <li class="nav-item m-1">
+                    <a href="{% url 'listado-producto-pinturas' %}" class="btn btn-outline-warning d-none d-inline-block ">PINTURAS</a>
+                </li>
+                <li class="nav-item m-1">
+                    <a href="{% url 'listado-producto-iluminacion' %}" class="btn btn-outline-warning d-none d-inline-block ">ILUMINACIÓN</a>
+                </li>
+                <li class="nav-item m-1">
+                    <a href="{% url 'listado-producto-baldozas' %}" class="btn btn-outline-warning d-none d-inline-block ">BALDOZAS</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+    <div class="row pt-3">
+        {% for p in entity %}
+
+        <div class="col-md-4">
+            <form method="POST" id="formulario{{ forloop.counter }}" action="{% url 'agregar_a_carrito' %}">
+                {% csrf_token %}
+                <figure class="card bg-light">
+                    <input type="text" id="id{{ forloop.counter }}" name="id-producto" value="{{ p.0 }}" hidden>
+                    <a href="{% url 'detalles-producto' p.0 %}">
+                        {% if p.12 %}
+                        <div class="img-wrap"><img style="width: 347px; height: 320px;" class="img-fluid"
+                                src="https://res.cloudinary.com/djxgsv3yo/image/upload/{{ p.12 }}">
+                        </div>
+                        {% else %}
+                        <div class="img-wrap"><img style="width: 347px; height: 320px;" class="img-fluid"
+                            src="https://res.cloudinary.com/djxgsv3yo/image/upload/v1622500346/FerreteriaFerme/Mensajes/sinFoto_fhdu9w.jpg">
+                        </div>
+                        {% endif %}
+                    </a>
+                    <figcaption class="text-center">
+                        <a href="{% url 'detalles-producto' p.0 %}" class="text-dark">
+                            <h4 class="pb-3"
+                                style="width:100%; text-overflow: ellipsis; overflow:hidden; white-space: nowrap;">
+                                {{ p.1 }}
+                            </h4>
+                        </a>
+                        <div class="pt-4">
+                            <div class="label-rating">Precio: ${{ p.3 }}</div>
+                            <div class="label-rating">Stock: {{ p.4 }} unidades</div>
+                            {% ifequal user.groups.all.0.name "EmpleadoGrupo" %}
+                            {% if p.9 == 1 %}
+                            <div class="label-rating text-success"><strong>PRODUCTO ACTIVO</strong></div>
+                            {% else %}
+                            <div class="label-rating text-danger"><strong>PRODUCTO INACTIVO</strong></div>
+                            {% endif %}
+                            {% endifequal %}
+                        </div>
+                        <div id="agregadoMensaje{{ forloop.counter }}">
+
+                        </div>
+                    </figcaption>
+                    <div class="d-flex justify-content-center pt-2">
+                        {% if request.user.is_authenticated %}
+                        {% ifequal user.groups.all.0.name "ClienteGrupo" %}
+                        {% if p.9 == 1 %}
+                        <button href="#" id="button{{ forloop.counter }}" onclick="addCarrito({{ forloop.counter }})"
+                            class="btn btn-sm btn-dark float-right" type="button">Agregar Al Carrito</button>
+                        {% else %}
+                        <button href="#" class="btn btn-sm btn-danger float-right" disabled type="button">Producto no disponible</button>
+                        {% endif %}
+                        {% endifequal %}
+                        {% ifequal user.groups.all.0.name "EmpleadoGrupo" %}
+                        <a href="#" onclick="abrirModalDetalle('{% url 'actualizar-producto' p.0 %}')"
+                            class="btn btn-sm btn-dark float-right">Actualizar</a>
+                        {% endifequal %}
+                        {% endif %}
+                    </div>
+                </figure>
+            </form>
+        </div>
+
+        <!--COL-->
+        {% endfor %}
+
+    </div>
+    <!--ROW-->
+    
+    <hr>
+    <div>
+        {% include 'core/paginator.html' %}
+    </div>
+
+
+    <div class="modal fade" id="detalle" role="dialog">
+
+    </div>
+
+
+
+</div>
+{% endblock %}

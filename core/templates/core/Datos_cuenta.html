@@ -1,0 +1,133 @@
+{% extends 'core/Base_cuenta.html' %}
+
+{% load static %}
+
+{% block link_cuenta %}
+<link rel="stylesheet" href="{% static 'core/css/Agregar_usuario.css' %}">
+{% endblock %}
+
+{% block javascript_cuenta %}
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+<script src="{% static 'core/js/traducciones.js' %}"></script>
+<script src="{% static 'core/js/datos_cuentas.js' %}"></script>
+
+{% endblock %}
+
+
+{% block Contenido_cuenta %}
+
+
+<div class="container">
+    <div class="fondoTitulo row rounded text-white">
+        <div class="pl-md-4 w-100 text-md-left text-center">
+            <h4 class="pt-1">Datos Personales:</h4>
+        </div>
+    </div>
+    <div class="pt-4 row">
+        <div class="pt-3 w-100">
+            <div class="card d-block">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Rut</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{ cliente.rut_cli }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            {% if cliente.id_tipo.id_tipo == 2 %}
+                            <h6 class="mb-0">Nombre</h6>
+                            {% else %}
+                            <h6 class="mb-0">Nombres</h6>
+                            {% endif %}
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{ cliente.nombres }}
+                        </div>
+                    </div>
+                    <hr>
+                    {% if cliente.apellidos %}
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Apellidos</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{ cliente.apellidos }}
+                        </div>
+                    </div>
+                    <hr>
+                    {% else %}
+
+                    {% endif %}
+                    {% if cliente.nacimiento %}
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Fecha de Nacimiento</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{cliente.nacimiento|date:'Y-m-d'}}
+                        </div>
+                    </div>
+                    <hr>
+                    {% else %}
+
+                    {% endif %}
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Celular</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{ cliente.fono }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Correo Electronico</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {{ cliente.email }}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <h6 class="mb-0">Tipo de Entidad</h6>
+                        </div>
+                        <div class="col-sm-9 text-secondary">
+                            {% if cliente.id_tipo.id_tipo == 1 %}
+                                Natural
+                            {%else%}
+                                Empresa
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-12 d-flex flex-row-reverse">
+                            {% if cliente.id_tipo.id_tipo == 1 %}
+                            <button class="btn btn-dark" onclick="abrirModalEdicion('{% url 'mostrar-actualizar-datos-cuenta' %}')" >Editar</button>
+                            {%else%}
+                            <button class="btn btn-dark" onclick="abrirModalEdicion('{% url 'mostrar-actualizar-datos-cuenta-empresa' %}')" >Editar</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="edicion" role="dialog">
+
+    </div>
+
+
+    {{ block.super }}
+    {% endblock %}

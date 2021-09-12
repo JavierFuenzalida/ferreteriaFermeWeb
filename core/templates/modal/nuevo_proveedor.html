@@ -1,0 +1,61 @@
+{% load static %}
+
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Nuevo Proveedor</h2>
+            <button class="close" type="button" data-dismiss = "modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button> 
+        </div>
+        <div class="modal-body">
+            
+            <form action="{% url 'nuevo-proveedor' %}" method="POST" id="formulario_proveedor">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Rut Proveedor:</label>
+                    <input type="text" name="rut_pro" id="rut_pro" class="form-control" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label>Nombre Entidad:</label>
+                    <input type="text" name="nombre_pro" id="nombre_pro" class="form-control" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label>Nombre de Usuario:</label>
+                    <input type="text" name="username_pro" id="username_pro" class="form-control" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña:</label>
+                    <input type="password" name="password_pro" id="password_pro" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirme Contraseña:</label>
+                    <input type="password" name="password2_pro" id="password2_pro" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Celular:</label>
+                    <input type="number" name="fono_pro" id="fono_pro" class="form-control" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" name="mail_pro" id="mail_pro" class="form-control" autocomplete="off" required>
+                </div>
+                <div class="form-group">
+                    <label>Rubro:</label>
+                    <select name="rubro_pro" id="rubro_pro" class="form-control">
+                        {% for r in rubro %}
+                        <option value="{{r.id_rubro}}">{{r.descripcion}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-dark" type="button" id="btnguardar">Registrar</button>
+                    <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'core/js/nuevo_proveedor.js' %}"></script>

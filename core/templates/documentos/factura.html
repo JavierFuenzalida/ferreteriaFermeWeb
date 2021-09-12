@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura PDF</title>
+
+    <style>
+        body {
+            font-weight: 200;
+            font-size: 14px;
+            font-family: sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .logo {
+            width: 100px;
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .noEspacios {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .contenedorLogo {
+            text-align: center;
+            padding-top: 20px;
+
+        }
+
+        .contenedorBoleta {
+            border: 1px solid grey;
+            padding-top: 10px;
+            margin-top: 5px;
+            margin: 0px;
+            
+
+        }
+
+        .contenedortabla {
+            border: 1px solid grey;
+            padding-top: 5px;
+            margin-top: 5px;
+            font-size: 13px;
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="contenedorLogo">
+        <img class="logo"
+            src="https://res.cloudinary.com/djxgsv3yo/image/upload/v1621239076/FerreteriaFerme/Mensajes/logo-negro_cw14br.png"
+            alt="">
+        <h2 class="noEspacios">FERRETERIA FERME</h2>
+        <p class="noEspacios">FACTURA ELECTRONICA</p>
+    </div>
+    <hr>
+    <div class="contenedorBoleta">
+        <div>
+            <strong style="font-size: 16px;">SOLICITANTE:</strong>
+            <br>
+            <strong>RUN:</strong> {{cliente.rut_cli}}
+            <br>
+            <strong>SOLICITANTE:</strong> {{cliente.nombres}}
+            <br>
+            <strong>FONO:</strong> {{cliente.fono}}
+            <br>
+            <strong>CORREO ELECTRONICO:</strong> {{cliente.email}}
+        </div>
+    </div>
+    <hr>
+    <div class="contenedorBoleta">
+        <div>
+            <strong>NUMERO FACTURA:</strong> {{factura.id_factura}}
+            <br>
+            <strong>FECHA DE COMPRA:</strong> {{factura.fecha_ingreso}}
+        </div>
+    </div>
+    <hr>
+    <div style="margin: 0px; padding: 0px;">
+        <strong style="margin: 0px; padding: 0px;">DETALLE DE COMPRA:</strong>
+        <table style="border: 1px solid grey;">
+            <tr style="padding: 2px; padding-top: 4px; background-color: rgb(236, 234, 234);">
+                <th style="width: 50%; padding-top: 4px;">PRODUCTO</th>
+                <th style="width: 15%; padding-top: 4px;">CANTIDAD</th>
+                <th style="width: 15%; padding-top: 4px;">VALOR UNI</th>
+                <th style="width: 20%; padding-top: 4px;">VALOR TOTAL</th>
+            </tr>
+            {% for d in detalle %}
+            <tr style="padding: 0px;">
+                <td style="padding-top: 4px; text-align: center;">{{d.id_producto.descripcion}}</td>
+                <td style="padding-top: 4px; text-align: center;">{{d.cantidad_prod}}</td>
+                <td style="padding-top: 4px; text-align: center;">${{d.precio_uni}}</td>
+                <td style="padding-top: 4px; text-align: center;">${{d.precio_total}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <hr>
+    <div class="contenedorBoleta">
+        <div>
+            <strong>SUB-TOTAL:</strong> ${{factura.sub_total}}
+            <br>
+            <strong>IVA:</strong> {{iva}}
+            <br>
+            <strong>TOTAL A PAGAR (IVA iNCLUIDO):</strong>  ${{factura.total}}
+        </div>
+    </div>
+    <div class="contenedorBoleta">
+        <div>
+            <strong>METODO DE PAGO:</strong> {{factura.id_pago.descripcion}}
+            <br>
+            <strong>DIRECCION DE DESPACHO:</strong> {{factura.despacho}}
+        </div>
+    </div>
+
+</body>
+
+</html>
